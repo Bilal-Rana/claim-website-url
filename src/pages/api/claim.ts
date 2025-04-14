@@ -1,15 +1,27 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import getRawBody from 'raw-body';
+import { parse } from 'querystring';
 import puppeteer from 'puppeteer';
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { Body } = req.body;
-  console.log("🔍 Method:", req.method);
+export const config = {
+  api: {
+    bodyParser: false, // Disable Next.js default body parsing
+  },
+};
 
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
+  const rawBody = await getRawBody(req);
+  const parsedBody = parse(rawBody.toString()); // Converts to an object
+
+  const Body = parsedBody.Body as string;
+  const From = parsedBody.From as string;
+
   console.log("📩 Incoming message body:", Body);
+  console.log("📞 From:", From);
 
   const urlMatch = Body?.match(/https?:\/\/\S+/);
   const url = urlMatch ? urlMatch[0] : null;
