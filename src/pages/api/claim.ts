@@ -54,8 +54,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     await page.goto(url, { waitUntil: 'load' });
 
     const claimedMessage = await page.evaluate(() => {
-      return document.body.innerText.includes('Opportunity Claimed!');
+      const elements = Array.from(document.querySelectorAll('button, a'));
+      return elements.map(el => el.outerHTML);
     });
+
+    console.log("🔍 Found elements with buttons/links:", claimedMessage);
 
     if (claimedMessage) {
       console.log("⚠️ Opportunity has already been claimed.");
