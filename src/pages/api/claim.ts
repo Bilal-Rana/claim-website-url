@@ -57,7 +57,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const elements = Array.from(document.querySelectorAll('button, a'));
       return elements.map(el => el.outerHTML);
     });
-
+    const fullHTML = await page.evaluate(() => {
+      return document.documentElement.outerHTML;
+    });
+    console.log("🔍 Found all Html", fullHTML);
     console.log("🔍 Found elements with buttons/links:", claimedMessage);
 
     if (claimedMessage) {
